@@ -244,3 +244,222 @@ void zagruz(unordered_map<int, Truba>& trubaline, unordered_map<int, Kaes>& kaes
 		fin.close();
 	}
 }
+int main()
+{
+	setlocale(LC_ALL, "Russian");
+
+	int number;
+	unordered_map <int, Truba> trubaline;
+	unordered_map <int, Kaes> kaes_grupa;
+
+	while (true) {
+
+		menu();
+
+		cout << "Пункт номер: ";
+
+		number = GetCorrectNumber(0, 8);
+
+		cout << endl << endl;
+
+		switch (number)
+		{
+		case 0:
+			return 0;
+
+		case 1:
+		{
+			Truba newTruba;
+			cin >> newTruba;
+			cout << "Труба добавлена" << endl;
+			trubaline.insert({ newTruba.GetID(), newTruba });
+			break;
+		}
+		case 2:
+		{
+			Kaes newKaes;
+			cin >> newKaes;
+			kaes_grupa.insert({ newKaes.GetID(), newKaes });
+			cout << "Компрессорная станция добавлена" << endl;
+			break;
+		}
+		case 3:
+		{
+			cout << "Трубы: " << endl;
+			for (auto& truba : trubaline)
+				cout << truba.second << endl << endl;
+			cout << "Компрессорные станции: " << endl;
+			for (auto& kaes : kaes_grupa)
+				cout << kaes.second << endl << endl;
+
+			break;
+		}
+		case 4:
+		{
+			if (trubaline.size() == 0) {
+				cout << "Редактирование не возможно: не была создана ни одна труба. Попробуйте снова." << endl;
+				break;
+			}
+			int number;
+			cout << "Выберите работу с одной трубой (введите 0) или с множеством (введите 1): ";
+			number = GetCorrectNumber(0, 1);
+			if (number == 0) {
+				int trubaID;
+				cout << "Введите id трубы: ";
+				trubaID = GetCorrectNumber(0, Truba::MAX_TRUBA_ID);
+				if (trubaline.find(trubaID) == trubaline.end()) {
+					cout << "Труба с введённым id не была найдена" << endl;
+					break;
+				}
+				cout << endl;
+				int choice;
+				cout << "Выберите действие с трубой (0 - редактирование, 1 - удаление): ";
+				choice = GetCorrectNumber(0, 1);
+				if (choice == 0)
+					trubaline[trubaID].redactTruba();
+				else if (choice == 1)
+					trubaline.erase(trubaline.find(trubaID));
+
+			}
+			else if (number == 1) {
+				int choicePackage;
+				cout << "Введите \"0\" для редактирования труб по фильтру или \"1\" для ввода id труб для редактирования: ";
+				choicePackage = GetCorrectNumber(0, 1);
+				if (choicePackage == 0) {
+					bool statusToSet;
+					cout << "\nСтатус для установки выбранным трубам (0 - \"в ремонте\", 1 - \"в работе\"): ";
+					statusToSet = (bool)GetCorrectNumber(0, 1);
+					vector<int> searchVector;
+					poiskTruba(trubaline, searchVector);
+					for (auto& id : searchVector) {
+						trubaline[id].SetWorkingStatus(statusToSet);
+					}
+				}
+				else if (choicePackage == 1) {
+					unordered_set<int> ids;
+					cout << "Введите количество редактируемых труб: ";
+					int idsAmount = GetCorrectNumber(0, Truba::MAX_TRUBA_ID);
+					cout << "\nВведите id труб для редактирования: ";
+					for (int i(0); i < idsAmount; i++) {
+						int id = GetCorrectNumber(0, Truba::MAX_TRUBA_ID - 1);
+						if (trubaline.find(id) != trubaline.end())
+							ids.insert(id);
+						else {
+							cout << "Труба с данным id не существует." << endl;
+							i--;
+						}
+					}
+					cout << "Статус для установки выбранным трубам (0 - \"в ремонте\", 1 - \"в работе\"): ";
+					bool statusToSet = (bool)GetCorrectNumber(0, 1);
+					for (auto& id : ids) {
+						trubaline[id].SetWorkingStatus(statusToSet);
+					}
+				}
+			}
+			break;
+		}
+		case 5:
+		{
+			if (kaes_grupa.size() == 0) {
+				cout << "Редактирование не возможно: не была создана ни одна компрессорная станция. Попробуйте снова." << endl;
+				break;
+			}
+
+			int number;
+			cout << "Выберите работу с одной компрессорной станцией (введите 0) или с множеством (введите 1): ";
+			number = GetCorrectNumber(0, 1);
+			if (number == 0) {
+				int kaesID;
+				cout << "\nВведите id компрессорной станции: ";
+				kaesID = GetCorrectNumber(0, Kaes::MAX_KAES_ID);
+				if (kaes_grupa.find(kaesID) == kaes_grupa.end()) {
+					cout << "Станция с введённым id не была найдена" << endl;
+					break;
+				}
+				cout << endl;
+				int choice;
+				cout << "Выберите действие со станцией (0 - редактирование, 1 - удаление): ";
+				choice = GetCorrectNumber(0, 1);
+				if (choice == 0)
+					kaes_grupa[kaesID].redactKaes();
+				else if (choice == 1)
+					kaes_grupa.erase(kaes_grupa.find(kaesID));
+
+			}
+			else if (number == 1) {
+
+				int choicePackage;
+				cout << "Введите \"0\" для редактирования станций по фильтру или \"1\" для ввода id станций для редактирования: ";
+				choicePackage = GetCorrectNumber(0, 1);
+				if (choicePackage == 0) {
+					vector<int> searchVector;
+					poiskKaes(kaes_grupa, searchVector);
+					cout << "Отредактируйте выбранные станции." << endl;
+					for (auto& id : searchVector) {
+						kaes_grupa[id].redactKaes();
+					}
+				}
+				else if (choicePackage == 1) {
+					unordered_set<int> ids;
+					cout << "\nВведите количество редактируемых станций: ";
+					int idsAmount = GetCorrectNumber(0, Kaes::MAX_KAES_ID);
+					cout << "\nВведите id станций для редактирования: ";
+					for (int i(0); i < idsAmount; i++) {
+						int id = GetCorrectNumber(0, Kaes::MAX_KAES_ID - 1);
+						if (kaes_grupa.find(id) != kaes_grupa.end())
+							ids.insert(id);
+						else {
+							cout << "Станции с данным id не существует." << endl;
+							i--;
+						}
+					}
+					cout << "Отредактируйте выбранные станции." << endl;
+					for (auto& id : ids) {
+						kaes_grupa[id].redactKaes();
+					}
+				}
+			}
+			break;
+		}
+		case 6:
+		{
+			string pathToFile;
+			cout << "Введите название файла сохранения: ";
+			cin >> pathToFile;
+			sohran(trubaline, kaes_grupa, pathToFile);
+			break;
+		}
+		case 7:
+		{
+
+			string pathToFile;
+			cout << "Введите название файла для загрузки: ";
+			cin >> pathToFile;
+			zagruz(trubaline, kaes_grupa, pathToFile);
+			break;
+		}
+		case 8:
+		{
+			vector<int> result;
+			int number;
+			cout << "Выберите объект для поиска (0 - если трубы, 1 - если компрессорные станции): ";
+			number = GetCorrectNumber(0, 1);
+			if (number == 0) {
+				poiskTruba(trubaline, result);
+				for (auto& truba : result)
+					cout << trubaline[truba] << endl << endl;
+			}
+			else if (number == 1) {
+				poiskKaes(kaes_grupa, result);
+				for (auto& kaes : result)
+					cout << kaes_grupa[kaes] << endl << endl;
+			}
+		}
+		default:
+			break;
+
+			cout << endl << endl;
+		}
+	}
+}
+
