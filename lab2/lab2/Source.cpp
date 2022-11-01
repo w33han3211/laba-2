@@ -191,3 +191,56 @@ void poiskKaes(unordered_map<int, Kaes>& kaes_grupa, vector<int>& resultVector) 
 		resultVector = poiskKaesParam(kaes_grupa, chekKaesnerabceh, param);
 	}
 }
+}
+
+void Truba::zagruzTruba(ifstream& fin) {
+	fin >> this->id;
+	getline(fin, name, '\n');
+	getline(fin, name, '\n');
+	fin >> this->diameter;
+	fin >> this->length;
+	fin >> this->workingStatus;
+}
+
+void Kaes::zagruzKaes(ifstream& fin) {
+	fin >> id;
+	getline(fin, name, '\n');
+	getline(fin, name, '\n');
+	fin >> count;
+	fin >> countInWork;
+	fin >> efficiency;
+}
+
+void zagruz(unordered_map<int, Truba>& trubaline, unordered_map<int, Kaes>& kaes_grupa, string filepath) {
+	ifstream fin;
+
+	fin.open(filepath, ios::in);
+	if (!fin) {
+		cout << "Не получилось открыть файл!";
+	}
+	else {
+		Truba::MAX_TRUBA_ID = 0;
+		Kaes::MAX_KAES_ID = 0;
+		Truba newTruba;
+		Kaes newKaes;
+		trubaline.clear();
+		kaes_grupa.clear();
+		int trubaNomer, kaesNomer;
+		fin >> trubaNomer >> kaesNomer;
+		for (int i(0); i < trubaNomer; i++) {
+			newTruba.zagruzTruba(fin);
+			trubaline.insert({ newTruba.GetID(), newTruba });
+			Truba::MAX_TRUBA_ID = (Truba::MAX_TRUBA_ID < newTruba.GetID() ? newTruba.GetID() : Truba::MAX_TRUBA_ID);
+		}
+		for (int i(0); i < kaesNomer; i++) {
+			newKaes.zagruzKaes(fin);
+			kaes_grupa.insert({ newKaes.GetID(), newKaes });
+			Kaes::MAX_KAES_ID = (Kaes::MAX_KAES_ID < newKaes.GetID() ? newKaes.GetID() : Kaes::MAX_KAES_ID);
+		}
+
+		Truba::MAX_TRUBA_ID++;
+		Kaes::MAX_KAES_ID++;
+
+		fin.close();
+	}
+}
