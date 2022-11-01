@@ -264,7 +264,7 @@ void sohran(unordered_map<int, Truba>& trubaline, unordered_map<int, Kaes>& kaes
 }
 
 
-void Truba::zagruzTruba(ifstream& fin);
+void Truba::zagruzTruba(ifstream& fin)
 {
 	fin >> this->id;
 	getline(fin, name, '\n');
