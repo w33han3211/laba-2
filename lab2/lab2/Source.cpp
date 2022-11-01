@@ -191,9 +191,81 @@ void poiskKaes(unordered_map<int, Kaes>& kaes_grupa, vector<int>& resultVector) 
 		resultVector = poiskKaesParam(kaes_grupa, chekKaesnerabceh, param);
 	}
 }
+
+
+int Truba::MAX_TRUBA_ID = 0;
+int Kaes::MAX_KAES_ID = 0;
+
+void menu() {
+	cout << "1. Добавить трубу" << endl;
+	cout << "2. Добавить компрессорную станцию" << endl;
+	cout << "3. Просмотр всех объектов " << endl;
+	cout << "4. Редактировать трубу " << endl;
+	cout << "5. Редактировать компрессорную станцию " << endl;
+	cout << "6. Сохранить " << endl;
+	cout << "7. Загрузить " << endl;
+	cout << "8. Найти объекты по фильтру " << endl;
+	cout << "0. Выход " << endl;
 }
 
-void Truba::zagruzTruba(ifstream& fin) {
+void Truba::redactTruba() {
+	cout << "Состояние трубы: ";
+	if (workingStatus) {
+		cout << "Работает" << endl;
+	}
+	else {
+		cout << "В ремонте" << endl;
+	}
+	cout << "Статус трубы (0 - если труба в ремонте, 1 - если труба работает): ";
+	workingStatus = GetCorrectNumber(0, 1);
+	cout << "Труба успешно изменена!" << endl;
+}
+
+void Kaes::redactKaes() {
+	cout << "ID: " << id << endl;
+	cout << "Количество цехов: " << count << endl;
+	cout << "Рабочих цехов: " << countInWork << endl;
+	cout << "Введите количество рабочих цехов: ";
+	countInWork = GetCorrectNumber(0, count);
+	cout << "Компрессорная станция успешно изменена!" << endl;
+}
+
+void Truba::sohranTruba(ofstream& fout) {
+	fout << id << endl;
+	fout << name << endl;
+	fout << diameter << endl;
+	fout << length << endl;
+	fout << workingStatus << endl;
+}
+
+void Kaes::sohranKaes(ofstream& fout) {
+	fout << id << endl;
+	fout << name << endl;
+	fout << count << endl;
+	fout << countInWork << endl;
+	fout << efficiency << endl;
+}
+
+void sohran(unordered_map<int, Truba>& trubaline, unordered_map<int, Kaes>& kaes_grupa, string filepath) {
+	ofstream fout;
+	fout.open(filepath);
+
+	if (!fout) {
+		cout << "Не получилось открыть файл!";
+	}
+	else {
+		fout << trubaline.size() << " " << kaes_grupa.size() << endl;
+		for (auto& truba : trubaline)
+			truba.second.sohranTruba(fout);
+		for (auto& kaes : kaes_grupa)
+			kaes.second.sohranKaes(fout);
+		fout.close();
+	}
+}
+
+
+void Truba::zagruzTruba(ifstream& fin);
+{
 	fin >> this->id;
 	getline(fin, name, '\n');
 	getline(fin, name, '\n');
